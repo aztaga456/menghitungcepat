@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Edukasi Angka Interaktif</title>
+    
+    <!-- Menggunakan Tailwind CSS untuk styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Menggunakan Font Awesome untuk ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Menggunakan Google Fonts untuk tipografi yang ramah anak -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Style kustom untuk font dan animasi */
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #f0f9ff; /* Warna latar belakang biru langit yang lembut */
+        }
+        .game-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .game-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .number-btn, .action-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .number-btn:hover, .action-btn:hover {
+            transform: scale(1.1);
+        }
+        .correct-answer {
+            animation: bounce-correct 0.8s ease;
+        }
+        .wrong-answer {
+            animation: shake-wrong 0.5s ease;
+        }
+        @keyframes bounce-correct {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        @keyframes shake-wrong {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        .rocket-fly {
+            animation: fly-off 2s ease-in forwards;
+        }
+        @keyframes fly-off {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-150vh) scale(0.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="app-container" class="w-full max-w-5xl mx-auto bg-white rounded-2xl shadow-2xl p-6 md:p-8 relative">
+        
+        <!-- 1. Dashboard Utama -->
+        <div id="dashboard" class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-cyan-600 mb-2">Ayo Belajar Angka!</h1>
+            <p class="text-gray-500 mb-8 text-lg">Pilih permainan yang kamu suka di bawah ini.</p>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <!-- Kartu: Mengenal Angka -->
+                <div onclick="showGame('mengenal-angka')" class="game-card bg-gradient-to-br from-sky-400 to-blue-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-list-ol text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Mengenal Angka</h2>
+                </div>
+                
+                <!-- Kartu: Penjumlahan -->
+                <div onclick="showGame('penjumlahan')" class="game-card bg-gradient-to-br from-teal-400 to-cyan-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-plus text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Penjumlahan</h2>
+                </div>
+
+                <!-- Kartu: Pengurangan -->
+                <div onclick="showGame('pengurangan')" class="game-card bg-gradient-to-br from-indigo-400 to-purple-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-minus text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Pengurangan</h2>
+                </div>
+
+                <!-- Kartu: Mencocokkan Jumlah -->
+                <div onclick="showGame('mencocokkan-jumlah')" class="game-card bg-gradient-to-br from-green-400 to-emerald-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-apple-whole text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Hitung Benda</h2>
+                </div>
+
+                <!-- Kartu: Tebak Angka -->
+                <div onclick="showGame('tebak-angka')" class="game-card bg-gradient-to-br from-amber-400 to-orange-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-dice-five text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Tebak Angka</h2>
+                </div>
+
+                <!-- Kartu: Angka Berwarna -->
+                <div onclick="showGame('angka-berwarna')" class="game-card bg-gradient-to-br from-purple-400 to-indigo-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-palette text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Angka Berwarna</h2>
+                </div>
+
+                <!-- Kartu: Lebih Besar/Kecil -->
+                <div onclick="showGame('lebih-besar-kecil')" class="game-card bg-gradient-to-br from-rose-400 to-pink-500 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-greater-than-equal text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Lebih Besar/Kecil</h2>
+                </div>
+
+                <!-- Kartu: Hitung Mundur -->
+                <div onclick="showGame('hitung-mundur')" class="game-card bg-gradient-to-br from-slate-600 to-gray-800 text-white p-6 rounded-xl flex flex-col items-center justify-center cursor-pointer">
+                    <i class="fa-solid fa-rocket text-5xl mb-3"></i>
+                    <h2 class="font-bold text-xl">Hitung Mundur</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Container untuk semua layar permainan (awalnya disembunyikan) -->
+        <div id="game-screens" class="hidden">
+            <button onclick="showDashboard()" class="absolute top-6 right-6 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-full z-10">
+                <i class="fa-solid fa-times mr-2"></i> Kembali
+            </button>
+            <div id="game-content" class="text-center">
+                <!-- Konten permainan akan dimuat di sini oleh JavaScript -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Inisialisasi Web Speech API untuk suara
+        const synth = window.speechSynthesis;
+
+        // Variabel global untuk state permainan
+        let correctAnswer;
+        let currentUserAnswer = 0;
+        const emojis = ['🍎', '⭐', '⚽', '🎈', '🍋', '🎁', '🐶', '🐱', '🦊', '🐼', '🐸'];
+        let colorMap = {
+            'merah': { bg: 'bg-red-500', text: 'text-red-500' },
+            'kuning': { bg: 'bg-yellow-400', text: 'text-yellow-400' },
+            'hijau': { bg: 'bg-green-500', text: 'text-green-500' },
+            'biru': { bg: 'bg-blue-500', text: 'text-blue-500' },
+            'ungu': { bg: 'bg-purple-500', text: 'text-purple-500' },
+            'oranye': { bg: 'bg-orange-500', text: 'text-orange-500' },
+        };
+        let colorNames = Object.keys(colorMap);
+
+        /**
+         * Fungsi utama untuk mengucapkan teks dengan suara Bahasa Indonesia.
+         * @param {string} text - Teks yang akan diucapkan.
+         */
+        function speak(text) {
+            if (synth.speaking) {
+                synth.cancel();
+            }
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'id-ID';
+            utterance.rate = 0.9;
+            synth.speak(utterance);
+        }
+
+        /**
+         * Menampilkan layar permainan yang dipilih dan menyembunyikan dashboard.
+         * @param {string} gameId - ID permainan yang akan ditampilkan.
+         */
+        function showGame(gameId) {
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('game-screens').classList.remove('hidden');
+            
+            const gameContent = document.getElementById('game-content');
+            
+            // Memuat konten permainan berdasarkan ID
+            switch(gameId) {
+                case 'mengenal-angka': initMengenalAngka(gameContent); break;
+                case 'penjumlahan': initPenjumlahan(gameContent); break;
+                case 'pengurangan': initPengurangan(gameContent); break;
+                case 'mencocokkan-jumlah': initMencocokkanJumlah(gameContent); break;
+                case 'tebak-angka': initTebakAngka(gameContent); break;
+                case 'angka-berwarna': initAngkaBerwarna(gameContent); break;
+                case 'lebih-besar-kecil': initLebihBesarKecil(gameContent); break;
+                case 'hitung-mundur': initHitungMundur(gameContent); break;
+            }
+        }
+
+        /**
+         * Kembali ke dashboard utama.
+         */
+        function showDashboard() {
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('game-screens').classList.add('hidden');
+            document.getElementById('game-content').innerHTML = ''; // Membersihkan konten permainan
+            synth.cancel(); // Hentikan suara jika ada yang sedang berjalan
+        }
+
+        /**
+         * Menghasilkan angka acak dalam rentang tertentu.
+         * @param {number} min - Nilai minimum.
+         * @param {number} max - Nilai maksimum.
+         * @returns {number} Angka acak.
+         */
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // --- Inisialisasi Logika Permainan ---
+
+        function initMengenalAngka(container) {
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-sky-600 mb-6">Mengenal Angka</h2>
+                <p class="text-gray-500 mb-8">Klik angka untuk mendengar suaranya!</p>
+                <div id="number-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4"></div>
+            `;
+            const grid = container.querySelector('#number-grid');
+            for (let i = 0; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn text-5xl font-bold p-6 rounded-lg bg-sky-100 text-sky-700 hover:bg-sky-200';
+                btn.textContent = i;
+                btn.onclick = () => {
+                    speak(`${i}`); // --- PERUBAHAN DI SINI ---
+                    btn.classList.add('correct-answer');
+                    setTimeout(() => btn.classList.remove('correct-answer'), 800);
+                };
+                grid.appendChild(btn);
+            }
+        }
+
+        function initPenjumlahan(container) {
+            currentUserAnswer = 0;
+            const num1 = getRandomInt(1, 5);
+            const num2 = getRandomInt(1, 4);
+            correctAnswer = num1 + num2;
+            const currentEmoji = emojis[getRandomInt(0, emojis.length - 1)];
+
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-teal-600 mb-4">Penjumlahan</h2>
+                <div class="flex items-center justify-center text-4xl md:text-6xl space-x-4 md:space-x-6 my-8">
+                    <div class="flex flex-wrap justify-center gap-2">${currentEmoji.repeat(num1)}</div>
+                    <span class="text-teal-500 font-bold">+</span>
+                    <div class="flex flex-wrap justify-center gap-2">${currentEmoji.repeat(num2)}</div>
+                    <span class="text-teal-500 font-bold">=</span>
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-7xl font-bold text-gray-700" id="answer-box">?</div>
+                </div>
+                <div class="flex items-center justify-center gap-4 my-8">
+                    <button onclick="updateAnswer(-1)" class="action-btn bg-red-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-4xl font-bold">-</button>
+                    <div id="current-answer-display" class="text-7xl font-bold text-teal-700 w-28 text-center">${currentUserAnswer}</div>
+                    <button onclick="updateAnswer(1)" class="action-btn bg-green-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-4xl font-bold">+</button>
+                </div>
+                <button id="check-btn" onclick="checkMathAnswer(() => initPenjumlahan(container))" class="bg-teal-500 text-white font-bold py-3 px-10 rounded-full text-xl hover:bg-teal-600">Periksa</button>
+            `;
+        }
+
+        function initPengurangan(container) {
+            currentUserAnswer = 0;
+            const num1 = getRandomInt(3, 10);
+            const num2 = getRandomInt(1, num1 - 1);
+            correctAnswer = num1 - num2;
+            const currentEmoji = emojis[getRandomInt(0, emojis.length - 1)];
+
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-indigo-600 mb-4">Pengurangan</h2>
+                <div class="flex items-center justify-center text-4xl md:text-6xl space-x-4 md:space-x-6 my-8">
+                    <div class="flex flex-wrap justify-center gap-2">${currentEmoji.repeat(num1)}</div>
+                    <span class="text-indigo-500 font-bold">-</span>
+                    <div class="flex flex-wrap justify-center gap-2">${currentEmoji.repeat(num2)}</div>
+                    <span class="text-indigo-500 font-bold">=</span>
+                    <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-7xl font-bold text-gray-700" id="answer-box">?</div>
+                </div>
+                <div class="flex items-center justify-center gap-4 my-8">
+                    <button onclick="updateAnswer(-1)" class="action-btn bg-red-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-4xl font-bold">-</button>
+                    <div id="current-answer-display" class="text-7xl font-bold text-indigo-700 w-28 text-center">${currentUserAnswer}</div>
+                    <button onclick="updateAnswer(1)" class="action-btn bg-green-500 text-white rounded-full w-16 h-16 flex items-center justify-center text-4xl font-bold">+</button>
+                </div>
+                <button id="check-btn" onclick="checkMathAnswer(() => initPengurangan(container))" class="bg-indigo-500 text-white font-bold py-3 px-10 rounded-full text-xl hover:bg-indigo-600">Periksa</button>
+            `;
+        }
+        
+        function updateAnswer(change) {
+            const display = document.getElementById('current-answer-display');
+            if (!display) return;
+
+            currentUserAnswer += change;
+            if (currentUserAnswer < 0) {
+                currentUserAnswer = 0;
+            }
+            display.textContent = currentUserAnswer;
+        }
+
+        function checkMathAnswer(nextRound) {
+            const answerBox = document.getElementById('answer-box');
+            const checkBtn = document.getElementById('check-btn');
+            checkBtn.disabled = true;
+
+            if (currentUserAnswer === correctAnswer) {
+                speak('Benar! Hebat!');
+                answerBox.textContent = correctAnswer;
+                answerBox.classList.add('correct-answer', 'bg-green-200', 'text-green-700');
+                setTimeout(() => {
+                    nextRound();
+                }, 2000);
+            } else {
+                speak('Ups, coba lagi ya.');
+                answerBox.classList.add('wrong-answer');
+                setTimeout(() => {
+                    answerBox.classList.remove('wrong-answer');
+                    checkBtn.disabled = false;
+                }, 800);
+            }
+        }
+
+        function initMencocokkanJumlah(container) {
+            correctAnswer = getRandomInt(1, 10);
+            const currentEmoji = emojis[getRandomInt(0, emojis.length - 1)];
+            
+            let options = new Set([correctAnswer]);
+            while(options.size < 3) {
+                options.add(getRandomInt(1, 10));
+            }
+            const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-green-600 mb-6">Hitung Jumlah Benda</h2>
+                <div id="item-display" class="text-6xl md:text-7xl mb-8 flex flex-wrap justify-center gap-2">${currentEmoji.repeat(correctAnswer)}</div>
+                <p class="text-gray-500 mb-8">Ada berapa ${currentEmoji} di atas? Pilih jawaban yang benar!</p>
+                <div id="options-container" class="flex justify-center gap-4"></div>
+            `;
+
+            const optionsContainer = container.querySelector('#options-container');
+            shuffledOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn text-4xl font-bold p-6 rounded-lg bg-green-100 text-green-700 hover:bg-green-200 w-24 h-24 flex items-center justify-center';
+                btn.textContent = opt;
+                btn.onclick = (e) => checkAnswer(opt, correctAnswer, () => initMencocokkanJumlah(container), e.target);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function initTebakAngka(container) {
+            correctAnswer = getRandomInt(0, 10);
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-amber-600 mb-6">Tebak Angka</h2>
+                <div id="question" class="text-gray-500 mb-8 text-2xl">...</div>
+                <div id="number-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4"></div>
+            `;
+            setTimeout(() => {
+                speak(`Di mana angka ${correctAnswer}?`);
+                container.querySelector('#question').textContent = `Di mana angka ${correctAnswer}?`;
+            }, 500);
+
+            const grid = container.querySelector('#number-grid');
+            for (let i = 0; i <= 10; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn text-5xl font-bold p-6 rounded-lg bg-amber-100 text-amber-700 hover:bg-amber-200';
+                btn.textContent = i;
+                btn.onclick = (e) => checkAnswer(i, correctAnswer, () => initTebakAngka(container), e.target);
+                grid.appendChild(btn);
+            }
+        }
+
+        function initAngkaBerwarna(container) {
+            const targetNumber = getRandomInt(0, 9);
+            const targetColorName = colorNames[getRandomInt(0, colorNames.length - 1)];
+            correctAnswer = `${targetNumber}-${targetColorName}`;
+
+            let options = new Set();
+            while (options.size < 5) {
+                const num = getRandomInt(0, 9);
+                const color = colorNames[getRandomInt(0, colorNames.length - 1)];
+                options.add(`${num}-${color}`);
+            }
+            options.add(correctAnswer);
+            const shuffledOptions = Array.from(options).sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-purple-600 mb-6">Angka Berwarna</h2>
+                <div id="question" class="text-gray-500 mb-8 text-2xl">...</div>
+                <div id="options-container" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+            `;
+            setTimeout(() => {
+                speak(`Klik angka ${targetNumber} yang berwarna ${targetColorName}!`);
+                container.querySelector('#question').innerHTML = `Klik angka <span class="font-bold ${colorMap[targetColorName].text}">${targetNumber}</span> yang berwarna <span class="font-bold ${colorMap[targetColorName].text}">${targetColorName}</span>!`;
+            }, 500);
+
+            const optionsContainer = container.querySelector('#options-container');
+            shuffledOptions.forEach(opt => {
+                const [num, color] = opt.split('-');
+                const btn = document.createElement('button');
+                btn.className = `number-btn text-5xl font-bold p-8 rounded-lg text-white ${colorMap[color].bg}`;
+                btn.textContent = num;
+                btn.onclick = (e) => checkAnswer(opt, correctAnswer, () => initAngkaBerwarna(container), e.target);
+                optionsContainer.appendChild(btn);
+            });
+        }
+        
+        function initLebihBesarKecil(container) {
+            let num1 = getRandomInt(1, 9);
+            let num2 = getRandomInt(1, 9);
+            while (num1 === num2) {
+                num2 = getRandomInt(1, 9);
+            }
+            correctAnswer = Math.max(num1, num2);
+
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-rose-600 mb-6">Lebih Besar atau Lebih Kecil?</h2>
+                <p class="text-gray-500 mb-8 text-2xl">Mana angka yang lebih besar?</p>
+                <div id="options-container" class="flex justify-center gap-8"></div>
+            `;
+            const optionsContainer = container.querySelector('#options-container');
+            [num1, num2].forEach(num => {
+                const btn = document.createElement('button');
+                btn.className = 'number-btn text-7xl font-bold p-8 rounded-lg bg-rose-100 text-rose-700 hover:bg-rose-200';
+                btn.textContent = num;
+                btn.onclick = (e) => checkAnswer(num, correctAnswer, () => initLebihBesarKecil(container), e.target);
+                optionsContainer.appendChild(btn);
+            });
+        }
+        
+        function initHitungMundur(container) {
+            container.innerHTML = `
+                <h2 class="text-3xl font-bold text-slate-700 mb-6">Hitung Mundur!</h2>
+                <div class="relative h-64 flex flex-col items-center justify-end">
+                    <div id="rocket" class="text-8xl mb-4">🚀</div>
+                    <div id="countdown-display" class="text-9xl font-extrabold text-slate-800">5</div>
+                </div>
+                <button id="start-countdown-btn" onclick="startCountdown()" class="mt-8 bg-slate-700 text-white font-bold py-3 px-8 rounded-full text-xl hover:bg-slate-800">Mulai!</button>
+            `;
+        }
+
+        function startCountdown() {
+            document.getElementById('start-countdown-btn').style.display = 'none';
+            let count = 5;
+            const display = document.getElementById('countdown-display');
+            const rocket = document.getElementById('rocket');
+
+            const interval = setInterval(() => {
+                if (display) display.textContent = count;
+                speak(count);
+                count--;
+                if (count < 0) {
+                    clearInterval(interval);
+                    if (display) display.textContent = '🚀';
+                    speak('Meluncur!');
+                    if (rocket) rocket.classList.add('rocket-fly');
+                    setTimeout(() => initHitungMundur(document.getElementById('game-content')), 2500);
+                }
+            }, 1200);
+        }
+
+        /**
+         * Fungsi generik untuk memeriksa jawaban (untuk game klik langsung).
+         * @param {*} selected - Jawaban yang dipilih pengguna.
+         * @param {*} correct - Jawaban yang benar.
+         * @param {Function} nextRound - Fungsi untuk memulai ronde berikutnya.
+         * @param {HTMLElement} element - Elemen tombol yang diklik.
+         */
+        function checkAnswer(selected, correct, nextRound, element) {
+            // Mencegah klik ganda
+            const parent = element.parentElement;
+            if (parent) parent.style.pointerEvents = 'none';
+
+            if (selected == correct) {
+                speak('Benar! Hebat!');
+                element.classList.add('correct-answer');
+                setTimeout(() => {
+                    nextRound();
+                    if (parent) parent.style.pointerEvents = 'auto';
+                }, 1500);
+            } else {
+                speak('Ups, coba lagi ya.');
+                element.classList.add('wrong-answer');
+                setTimeout(() => {
+                    element.classList.remove('wrong-answer');
+                    if (parent) parent.style.pointerEvents = 'auto';
+                }, 800);
+            }
+        }
+    </script>
+</body>
+</html>
